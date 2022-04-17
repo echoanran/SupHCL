@@ -97,7 +97,7 @@ if __name__ == "__main__":
             'test_batch_size': 1,
             'num_worker': 1,
             'debug': False,
-            'model': 'net.HACK.Model',
+            'model': 'net.SupHCL.Model',
             'model_args': {
                 'num_class': args.num_class,
                 'backbone': 'resnet18',
