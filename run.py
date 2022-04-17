@@ -57,7 +57,7 @@ if __name__ == "__main__":
 
         desired_caps = {
             'work_dir': os.path.join(args.work_dir, str(k)),
-            'feeder': 'feeder.feeder_HACK.Feeder',
+            'feeder': 'feeder.feeder_SupHCL.Feeder',
             'train_feeder_args': {
                 'label_path':
                 os.path.join(args.data_dir, 'train' + str(k) + '_label.pkl'),

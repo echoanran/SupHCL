@@ -1,36 +1,45 @@
-# HACK
+# Pursuing Knowledge Consistency: Supervised Hierarchical ontrastive Learning for Facial Action Unit Recognition
 
-# Environments
-> conda env create -f hack.yaml
+<p align="center">
+<img src="images/overview.png" width="88%" />
+</p>
+
+## Dependencies
+* python >= 3.6
+* torch >= 1.10.0
+* requirements.txt
+```bash
+$ pip install -r requirements.txt
+```
+* torchlight
+```bash
+$ cd $INSTALL_DIR/torchlight
+$ python setup.py install
+```
 
 ## Data Preparation
-### Step 1: raw data preprocessing
-Require access to the two datasets and download the data:
-* [BP4D](http://www.cs.binghamton.edu/~lijun/Research/3DFE/3DFE_Analysis.html)
-* [DISFA](http://www.engr.du.edu/mmahoor/DISFA.htm)
+### Step 1: Download datasets
+First, request for the access of the two AU benchmark datasets: [BP4D](http://www.cs.binghamton.edu/~lijun/Research/3DFE/3DFE_Analysis.html) and [DISFA](http://mohammadmahoor.com/disfa/).
 
-Preprocess datasets using Dlib:
-* Detect face and facial landmark
+### Step 2: Preprocess raw data
+Preprocess the downloaded datasets using [Dlib](http://dlib.net/) (related functions are provided in `$INSTALL_DIR/au_lib/face_ops.py`):
+* Detect face and facial landmarks
 * Align the cropped faces according to the computed coordinates of eye centers
 * Resize faces to (256, 256)
 
-### Step2: random a 3-fold subject-exclusive split
-E.g., for BP4D
-* `Fold-0`: F004 F019 F005 M012 M006 F011 F022 M018 F003 F014 M002 M014 F017 M010 
-* `Fold-1`: M008 F007 F021 F010 F020 F016 M001 F023 M007 M013 M009 M017 F006 F013 
-* `Fold-2`: M011 M003 F008 F001 M004 F012 F015 M005 F018 F002 M016 M015 F009 
+### Step 3: Split dataset for subject-exclusive 3-fold cross-validation
+Split the subject IDs into 3 folds randomly (an example is provided in `$INSTALL_DIR/data/splits_*.txt`)
 
-### Step 3: feeder input generation
-For dataloader, ./feeder/feeder_HACK.py requires two data files
-Generate these files for each fold
-
-* `label_path`: the path to file which contains labels ('.pkl' data), [N, num_class]
+### Step 4: Generate feeder input files
+Our dataloader `$INSTALL_DIR/feeder/feeder_SupHCL.py` requires two data files (an example is given in `$INSTALL_DIR/data/bp4d_example`):
+* `label_path`: the path to file which contains labels ('.pkl' data), [N, 1, num_class]
 * `image_path`: the path to file which contains image paths ('.pkl' data), [N, 1]
 
-## Compute meta
-We provide an example in ./misc
+## Compute PCC matrices & prototypes
+We provide the computed files in ./misc
 
-## Run 
+## Training 
 ```bash
-python run.py
+$ cd $INSTALL_DIR
+$ python run.py
 ```
