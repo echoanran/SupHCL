@@ -2,11 +2,8 @@
 .vscode
 tmp*
 work_dir/*
-data/*
 config/*
 models/*
-
-images*
 
 *.pt
 *.caffemodel
