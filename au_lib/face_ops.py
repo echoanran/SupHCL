@@ -18,6 +18,7 @@ def get_face_size(image):
     height = (face.bottom() - face.top())
     width = (face.right() - face.left())
     return height, width
+    
 
 def get_facelandmark(image):
     global faceDetector, facialLandmarkPredictor
@@ -36,6 +37,7 @@ def get_facelandmark(image):
         
     return xyList
 
+
 def find_faces(image, normalize=False, resize=None, gray=None):
     global faceDetector
     faces = faceDetector(image, 1)
@@ -53,8 +55,42 @@ def find_faces(image, normalize=False, resize=None, gray=None):
         normalized_faces = cutted_faces
     return zip(normalized_faces, faces_coordinates)
 
+
 def _normalize_face(face, resize=350, gray=True):
     if gray:
         face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
     face = cv2.resize(face, (resize, resize))
     return face
+
+
+def transfer(x, y, RotationMatrix):
+
+    x_new = int(round(RotationMatrix[0, 0] * x + RotationMatrix[0, 1] * y + RotationMatrix[0, 2]))
+    y_new = int(round(RotationMatrix[1, 0] * x + RotationMatrix[1, 1] * y + RotationMatrix[1, 2]))
+
+    return x_new, y_new
+
+
+def alignment(img, featureList):
+
+    Xs = featureList[::2]
+    Ys = featureList[1::2]
+
+    eye_center =((Xs[36] + Xs[45]) * 1./2, (Ys[36] + Ys[45]) * 1./2)
+    dx = Xs[45] - Xs[36]
+    dy = Ys[45] - Ys[36]
+
+    angle = math.atan2(dy, dx) * 180. / math.pi
+
+    RotationMatrix = cv2.getRotationMatrix2D(eye_center, angle, scale=1)
+
+    new_img = cv2.warpAffine(img, RotationMatrix, (img.shape[1], img.shape[0])) 
+
+    RotationMatrix = np.array(RotationMatrix)
+    alignfeatureList = []
+    for i in range(len(Xs)):
+        x, y = transfer(Xs[i], Ys[i], RotationMatrix)
+        alignfeatureList.append(x)
+        alignfeatureList.append(y)
+
+    return new_img, alignfeatureList, RotationMatrix, eye_center
